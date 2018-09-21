@@ -19,19 +19,6 @@ namespace DigitPushService.Controllers
 
         [Authorize("User")]
         [HttpPost("me/pushchannels")]
-        [Consumes("application/vnd+pushserver.azurenotificationhub+json")]
-        public async Task<IActionResult> Register([FromBody]AzureNotificationHubPushChannelRegistration registration)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            await pushConfigurationManager.RegisterAsync(User.GetId(), registration);
-            return Ok();
-        }
-
-        [Authorize("User")]
-        [HttpPost("me/pushchannels")]
         [Consumes("application/vnd+pushserver.webpush+json")]
         public async Task<IActionResult> Register([FromBody]WebPushChannelRegistration registration)
         {
@@ -39,8 +26,21 @@ namespace DigitPushService.Controllers
             {
                 return BadRequest();
             }
-            await pushConfigurationManager.RegisterAsync(User.GetId(), registration);
-            return Ok();
+            var config = await pushConfigurationManager.RegisterAsync(User.GetId(), registration);
+            return Ok(config);
+        }
+
+        [Authorize("User")]
+        [HttpPost("me/pushchannels")]
+        [Consumes("application/vnd+pushserver.azurenotificationhub+json")]
+        public async Task<IActionResult> Register([FromBody]AzureNotificationHubPushChannelRegistration registration)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var config = await pushConfigurationManager.RegisterAsync(User.GetId(), registration);
+            return Ok(config);
         }
 
         [Authorize("User")]
