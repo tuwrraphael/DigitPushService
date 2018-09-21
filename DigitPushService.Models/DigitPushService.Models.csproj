@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0</Version>
+    <Authors>tuwrraphael</Authors>
+    <PackageProjectUrl>https://tuwrraphael.github.io/PushServer/</PackageProjectUrl>
+    <PackageTags>Digit PushService client</PackageTags>
+    <Description>Models for HttpClient for Digit PushService api</Description>
+    <RepositoryUrl>https://github.com/tuwrraphael/PushServer</RepositoryUrl>
+    <NeutralLanguage>en</NeutralLanguage>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PushServer.Models" Version="1.0.2" />
+  </ItemGroup>
+
+</Project>
