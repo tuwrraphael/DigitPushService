@@ -15,7 +15,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
     <PackageReference Include="PushServer" Version="1.0.1" />
+    <PackageReference Include="PushServer.Abstractions" Version="1.0.2" />
     <PackageReference Include="PushServer.AzureNotificationHub" Version="1.0.1" />
+    <PackageReference Include="PushServer.Firebase" Version="1.0.2" />
     <PackageReference Include="PushServer.PushConfiguration.EntityFramework" Version="1.0.1" />
     <PackageReference Include="PushServer.WebPush" Version="1.0.1" />
   </ItemGroup>

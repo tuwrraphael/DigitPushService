@@ -13,6 +13,7 @@ using PushServer.PushConfiguration.EntityFramework.Extensions;
 using PushServer.AzureNotificationHub;
 using PushServer.WebPush;
 using PushServer.WebPushApiClient;
+using PushServer.Firebase;
 
 namespace DigitPushService
 {
@@ -38,7 +39,8 @@ namespace DigitPushService
                 .AddConfigurationStore(builder =>
                             builder.UseSqlite(connectionString,
                                 sql => sql.MigrationsAssembly(migrationsAssembly)))
-                .AddAzureNotificationHub(v => {
+                .AddAzureNotificationHub(v =>
+                {
                 })
                 .AddWebPush(v =>
                 {
@@ -46,6 +48,9 @@ namespace DigitPushService
                     v.PrivateKey = Configuration["VapidPrivateKey"];
                     v.PublicKey = Configuration["VapidPublicKey"];
                     v.Subject = Configuration["WebPushSubject"];
+                })
+                .AddFirebase(v => {
+                    v.ServerKey = Configuration["FirebaseServerKey"];
                 });
             services.AddOptions();
 

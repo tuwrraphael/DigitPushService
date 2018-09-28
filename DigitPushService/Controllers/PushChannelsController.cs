@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PushServer.Abstractions.Services;
 using PushServer.AzureNotificationHub;
+using PushServer.Firebase;
 using PushServer.WebPush;
 
 namespace DigitPushService.Controllers
@@ -15,6 +16,19 @@ namespace DigitPushService.Controllers
         public PushChannelsController(IPushConfigurationManager pushConfigurationManager)
         {
             this.pushConfigurationManager = pushConfigurationManager;
+        }
+
+        [Authorize("User")]
+        [HttpPost("me/pushchannels")]
+        [Consumes("application/vnd+pushserver.firebase+json")]
+        public async Task<IActionResult> Register([FromBody]FirebasePushChannelRegistration registration)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var config = await pushConfigurationManager.RegisterAsync(User.GetId(), registration);
+            return Ok(config);
         }
 
         [Authorize("User")]
@@ -50,6 +64,13 @@ namespace DigitPushService.Controllers
             return Ok(await pushConfigurationManager.GetAllAsync(User.GetId()));
         }
 
+        [Authorize("Service")]
+        [HttpGet("{userId}/pushchannels")]
+        public async Task<IActionResult> Get(string userId)
+        {
+            return Ok(await pushConfigurationManager.GetAllAsync(userId));
+        }
+
         [Authorize("User")]
         [HttpDelete("me/pushchannels/{configurationId}")]
         public async Task<IActionResult> Delete(string configurationId)
@@ -82,6 +103,19 @@ namespace DigitPushService.Controllers
         [HttpPut("me/pushchannels/{configurationid}")]
         [Consumes("application/vnd+pushserver.webpush+json")]
         public async Task<IActionResult> Update([FromQuery]string configurationid, [FromBody]WebPushChannelRegistration registration)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            await pushConfigurationManager.UpdateAsync(User.GetId(), configurationid, registration);
+            return Ok();
+        }
+
+        [Authorize("User")]
+        [HttpPut("me/pushchannels/{configurationid}")]
+        [Consumes("application/vnd+pushserver.firebase+json")]
+        public async Task<IActionResult> Update([FromQuery]string configurationid, [FromBody]FirebasePushChannelRegistration registration)
         {
             if (!ModelState.IsValid)
             {

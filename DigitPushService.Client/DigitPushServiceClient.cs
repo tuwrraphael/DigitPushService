@@ -1,6 +1,7 @@
 ﻿using DigitPushService.Models;
 using Newtonsoft.Json;
 using OAuthApiClient.Abstractions;
+using PushServer.PushConfiguration.Abstractions.Models;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -27,6 +28,44 @@ namespace DigitPushService.Client
         }
 
         public IPushCollection Push => new PushCollection(ClientFactory);
+
+        public IPushChannelsCollection PushChannels => new PushChannelsCollection(ClientFactory);
+
+        private class PushChannelsCollection : IPushChannelsCollection
+        {
+            private readonly Func<Task<HttpClient>> clientFactory;
+
+            public PushChannelsCollection(Func<Task<HttpClient>> clientFactory)
+            {
+                this.clientFactory = clientFactory;
+            }
+
+            public IPushChannelsApi this[string userId] => new PushChannelsApi(clientFactory, userId);
+        }
+
+        private class PushChannelsApi : IPushChannelsApi
+        {
+            private readonly Func<Task<HttpClient>> clientFactory;
+            private string userId;
+
+            public PushChannelsApi(Func<Task<HttpClient>> clientFactory, string userId)
+            {
+                this.clientFactory = clientFactory;
+                this.userId = userId;
+            }
+
+            public async Task<PushChannelConfiguration[]> GetAllAsync()
+            {
+                var client = await clientFactory();
+                var res = await client.GetAsync($"api/{userId}/pushchannels");
+                if (!res.IsSuccessStatusCode)
+                {
+                    throw new DigitPushServiceException($"Push creation request resulted in {res.StatusCode}.");
+                }
+                var content = await res.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<PushChannelConfiguration[]>(content);
+            }
+        }
 
         private class PushCollection : IPushCollection
         {
