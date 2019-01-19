@@ -89,7 +89,7 @@ namespace DigitPushService.Controllers
         [Authorize("User")]
         [HttpPut("me/pushchannels/{configurationid}")]
         [Consumes("application/vnd+pushserver.azurenotificationhub+json")]
-        public async Task<IActionResult> Update([FromQuery]string configurationid, [FromBody]AzureNotificationHubPushChannelRegistration registration)
+        public async Task<IActionResult> Update(string configurationid, [FromBody]AzureNotificationHubPushChannelRegistration registration)
         {
             if (!ModelState.IsValid)
             {
@@ -102,7 +102,7 @@ namespace DigitPushService.Controllers
         [Authorize("User")]
         [HttpPut("me/pushchannels/{configurationid}")]
         [Consumes("application/vnd+pushserver.webpush+json")]
-        public async Task<IActionResult> Update([FromQuery]string configurationid, [FromBody]WebPushChannelRegistration registration)
+        public async Task<IActionResult> Update(string configurationid, [FromBody]WebPushChannelRegistration registration)
         {
             if (!ModelState.IsValid)
             {
@@ -115,7 +115,7 @@ namespace DigitPushService.Controllers
         [Authorize("User")]
         [HttpPut("me/pushchannels/{configurationid}")]
         [Consumes("application/vnd+pushserver.firebase+json")]
-        public async Task<IActionResult> Update([FromQuery]string configurationid, [FromBody]FirebasePushChannelRegistration registration)
+        public async Task<IActionResult> Update(string configurationid, [FromBody]FirebasePushChannelRegistration registration)
         {
             if (!ModelState.IsValid)
             {

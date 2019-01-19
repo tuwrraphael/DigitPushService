@@ -20,10 +20,20 @@ namespace DigitPushService.Controllers
             this.pushService = pushService;
             this.logger = logger;
         }
-
+        [Authorize("User")]
+        [HttpPost("me/push")]
+        public async Task<IActionResult> Push([FromBody]PushRequest request)
+        {
+            return await ExecutePush(User.GetId(), request);
+        }
         [Authorize("Service")]
         [HttpPost("{userId}/push")]
         public async Task<IActionResult> Push(string userId, [FromBody]PushRequest request)
+        {
+            return await ExecutePush(userId, request);
+        }
+
+        private async Task<IActionResult> ExecutePush(string userId,PushRequest request)
         {
             if (!ModelState.IsValid)
             {
