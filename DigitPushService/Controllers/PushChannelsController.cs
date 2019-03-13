@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PushServer.Abstractions.Services;
 using PushServer.AzureNotificationHub;
 using PushServer.Firebase;
+using PushServer.PushConfiguration.Abstractions.Models;
 using PushServer.WebPush;
 
 namespace DigitPushService.Controllers
@@ -122,6 +124,22 @@ namespace DigitPushService.Controllers
                 return BadRequest();
             }
             await pushConfigurationManager.UpdateAsync(User.GetId(), configurationid, registration);
+            return Ok();
+        }
+
+        [Authorize("Service")]
+        [HttpPut("{userId}/pushchannels/{configurationid}/options")]
+        public async Task<IActionResult> Update(string userId, string configurationid, [FromBody]PushChannelOptions options)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            if (!(await pushConfigurationManager.GetAllAsync(userId)).Any(v => v.Id == configurationid))
+            {
+                return NotFound();
+            }
+            await pushConfigurationManager.UpdateOptionsAsync(User.GetId(), configurationid, options);
             return Ok();
         }
     }

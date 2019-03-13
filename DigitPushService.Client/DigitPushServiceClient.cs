@@ -54,6 +54,8 @@ namespace DigitPushService.Client
                 this.userId = userId;
             }
 
+            public IPushChannelApi this[string channelId] => throw new NotImplementedException();
+
             public async Task<PushChannelConfiguration[]> GetAllAsync()
             {
                 var client = await clientFactory();
@@ -64,6 +66,34 @@ namespace DigitPushService.Client
                 }
                 var content = await res.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<PushChannelConfiguration[]>(content);
+            }
+        }
+
+        private class PushChannelApi : IPushChannelApi, IChannelOptions
+        {
+            private readonly Func<Task<HttpClient>> clientFactory;
+            private readonly string userId;
+            private readonly string channelId;
+
+            public PushChannelApi(Func<Task<HttpClient>> clientFactory, string userId, string channelId)
+            {
+                this.clientFactory = clientFactory;
+                this.userId = userId;
+                this.channelId = channelId;
+            }
+
+            public IChannelOptions Options => this;
+
+            public async Task PutAsync(PushChannelOptions options)
+            {
+                var client = await clientFactory();
+                var json = JsonConvert.SerializeObject(options);
+                var res = await client.PutAsync($"api/{userId}/pushchannels/{channelId}/options",
+                    new StringContent(json, Encoding.UTF8, "application/json"));
+                if (!res.IsSuccessStatusCode)
+                {
+                    throw new DigitPushServiceException($"Update channel options resulted in {res.StatusCode}.");
+                }
             }
         }
 
