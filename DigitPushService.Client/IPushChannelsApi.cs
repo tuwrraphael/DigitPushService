@@ -6,5 +6,7 @@ namespace DigitPushService.Client
     public interface IPushChannelsApi
     {
         Task<PushChannelConfiguration[]> GetAllAsync();
+
+        IPushChannelApi this[string channelId] { get; }
     }
 }
