@@ -54,7 +54,7 @@ namespace DigitPushService.Client
                 this.userId = userId;
             }
 
-            public IPushChannelApi this[string channelId] => throw new NotImplementedException();
+            public IPushChannelApi this[string channelId] => new PushChannelApi(clientFactory, userId, channelId);
 
             public async Task<PushChannelConfiguration[]> GetAllAsync()
             {
