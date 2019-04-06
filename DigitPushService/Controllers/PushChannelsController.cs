@@ -139,7 +139,7 @@ namespace DigitPushService.Controllers
             {
                 return NotFound();
             }
-            await pushConfigurationManager.UpdateOptionsAsync(User.GetId(), configurationid, options);
+            await pushConfigurationManager.UpdateOptionsAsync(userId, configurationid, options);
             return Ok();
         }
     }
