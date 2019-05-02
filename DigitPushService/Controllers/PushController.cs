@@ -59,11 +59,11 @@ namespace DigitPushService.Controllers
             {
                 if (!string.IsNullOrEmpty(request.ChannelId))
                 {
-                    await pushService.Push(request.ChannelId, request.Payload, null);
+                    await pushService.Push(request.ChannelId, request.Payload, request.Options);
                 }
                 else if (null != request.ChannelOptions)
                 {
-                    await pushService.Push(userId, request.ChannelOptions, request.Payload, null);
+                    await pushService.Push(userId, request.ChannelOptions, request.Payload, request.Options);
                 }
                 return StatusCode(201);
             }
