@@ -15,7 +15,7 @@
     <PackageReference Include="PushServer" Version="1.2.1" />
     <PackageReference Include="PushServer.Abstractions" Version="1.2.1" />
     <PackageReference Include="PushServer.AzureNotificationHub" Version="1.0.3" />
-    <PackageReference Include="PushServer.Firebase" Version="1.0.6" />
+    <PackageReference Include="PushServer.Firebase" Version="1.0.8" />
     <PackageReference Include="PushServer.PushConfiguration.EntityFramework" Version="1.1.0" />
     <PackageReference Include="PushServer.WebPush" Version="1.0.3" />
   </ItemGroup>
