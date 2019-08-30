@@ -14,6 +14,7 @@ using PushServer.AzureNotificationHub;
 using PushServer.WebPush;
 using PushServer.WebPushApiClient;
 using PushServer.Firebase;
+using Digit.DeviceSynchronization.Impl;
 
 namespace DigitPushService
 {
@@ -34,6 +35,8 @@ namespace DigitPushService
         {
             var connectionString = $"Data Source={HostingEnvironment.WebRootPath}\\App_Data\\pushservice.db";
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+
+            services.AddTransient<IThrotteledPushService, ThrotteledPushService>();
 
             services.AddPushServer()
                 .AddConfigurationStore(builder =>

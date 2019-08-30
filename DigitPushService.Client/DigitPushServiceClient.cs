@@ -1,4 +1,5 @@
-﻿using DigitPushService.Models;
+﻿using Digit.DeviceSynchronization.Impl;
+using DigitPushService.Models;
 using Newtonsoft.Json;
 using OAuthApiClient.Abstractions;
 using PushServer.PushConfiguration.Abstractions.Models;
@@ -27,20 +28,26 @@ namespace DigitPushService.Client
             this.httpClient = httpClient;
         }
 
-        public IPushCollection Push => new PushCollection(ClientFactory);
+        public IUserApi this[string userId] => new UserApi(ClientFactory, userId);
 
-        public IPushChannelsCollection PushChannels => new PushChannelsCollection(ClientFactory);
-
-        private class PushChannelsCollection : IPushChannelsCollection
+        private class UserApi : IUserApi
         {
             private readonly Func<Task<HttpClient>> clientFactory;
+            private readonly string userId;
 
-            public PushChannelsCollection(Func<Task<HttpClient>> clientFactory)
+            public UserApi(Func<Task<HttpClient>> clientFactory, string userId)
             {
                 this.clientFactory = clientFactory;
+                this.userId = userId;
             }
 
             public IPushChannelsApi this[string userId] => new PushChannelsApi(clientFactory, userId);
+
+            public IPushApi Push => new PushApi(clientFactory, userId);
+
+            public IPushChannelsApi PushChannels => new PushChannelsApi(clientFactory, userId);
+
+            public IDigitSyncApi DigitSync => new DigitSyncApi(clientFactory, userId);
         }
 
         private class PushChannelsApi : IPushChannelsApi
@@ -97,18 +104,6 @@ namespace DigitPushService.Client
             }
         }
 
-        private class PushCollection : IPushCollection
-        {
-            private readonly Func<Task<HttpClient>> clientFactory;
-
-            public PushCollection(Func<Task<HttpClient>> clientFactory)
-            {
-                this.clientFactory = clientFactory;
-            }
-
-            public IPushApi this[string userId] => new PushApi(clientFactory, userId);
-        }
-
         private class PushApi : IPushApi
         {
             private readonly Func<Task<HttpClient>> clientFactory;
@@ -125,6 +120,42 @@ namespace DigitPushService.Client
                 var client = await clientFactory();
                 var json = JsonConvert.SerializeObject(pushRequest);
                 var res = await client.PostAsync($"api/{userId}/push",
+                    new StringContent(json, Encoding.UTF8, "application/json"));
+                if (!res.IsSuccessStatusCode)
+                {
+                    throw new DigitPushServiceException($"Push creation request resulted in {res.StatusCode}.");
+                }
+            }
+        }
+
+        private class DigitSyncApi : IDigitSyncApi
+        {
+            private readonly Func<Task<HttpClient>> clientFactory;
+            private readonly string userId;
+
+            public DigitSyncApi(Func<Task<HttpClient>> clientFactory, string userId)
+            {
+                this.clientFactory = clientFactory;
+                this.userId = userId;
+            }
+
+            public async Task Device(DeviceSyncRequest deviceSyncRequest)
+            {
+                var client = await clientFactory();
+                var json = JsonConvert.SerializeObject(deviceSyncRequest);
+                var res = await client.PostAsync($"api/{userId}/digit-sync/device",
+                    new StringContent(json, Encoding.UTF8, "application/json"));
+                if (!res.IsSuccessStatusCode)
+                {
+                    throw new DigitPushServiceException($"Push creation request resulted in {res.StatusCode}.");
+                }
+            }
+
+            public async Task Location(LocationSyncRequest locationSyncRequest)
+            {
+                var client = await clientFactory();
+                var json = JsonConvert.SerializeObject(locationSyncRequest);
+                var res = await client.PostAsync($"api/{userId}/digit-sync/location",
                     new StringContent(json, Encoding.UTF8, "application/json"));
                 if (!res.IsSuccessStatusCode)
                 {
