@@ -36,7 +36,7 @@ namespace DigitPushService
             var connectionString = $"Data Source={HostingEnvironment.WebRootPath}\\App_Data\\pushservice.db";
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
-            services.AddTransient<IThrotteledPushService, ThrotteledPushService>();
+            services.AddSingleton<IThrotteledPushService, ThrotteledPushService>();
 
             services.AddPushServer()
                 .AddConfigurationStore(builder =>
